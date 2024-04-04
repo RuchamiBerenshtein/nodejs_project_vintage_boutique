@@ -14,19 +14,19 @@ async function main () {
   console.log('mongoDB connected')
 }
 
-const category = require('./controllers/categoryController')
-const product = require('./controllers/productController')
-const userController = require('./controllers/userController')
+const categoryRoute = require('./routes/categoryRoute')
+const productRoute = require('./routes/productRoute')
+const userRoute = require('./routes/userRoute')
 const middleware = require('./middleware/logMiddleware')
 const { loggedIn } = require('./middleware/auth')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(middleware)
-app.use('/user', userController)
+app.use('/user', userRoute)
 app.use(loggedIn)
-app.use('/category', category)
-app.use('/product', product)
+app.use('/category', categoryRoute)
+app.use('/product', productRoute)
 
 app.use((err, req, res, next) => {
   res.status(500).send('יש בעיה בשרת כרגע נסה שוב מאוחר יותר ' + err.message)

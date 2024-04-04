@@ -1,11 +1,9 @@
-const express = require('express')
-const app = express.Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 const UserFromDB = require('../models/user')
 
-app.post('/signup', async (req, res) => {
+const signup = async (req, res) => {
   try {
     const salt = await bcrypt.genSalt(10)
     const hasPassword = await bcrypt.hash(req.body.password, salt)
@@ -16,9 +14,9 @@ app.post('/signup', async (req, res) => {
     console.error(err)
     res.status(500).send(err.message)
   }
-})
+}
 
-app.post('/login', async (req, res) => {
+const login = async (req, res) => {
   try {
     const user = await UserFromDB.findById(req.body.id)
     if (!user) { res.status(404).send('User not found') }
@@ -32,6 +30,9 @@ app.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).send(err.message)
   }
-})
+}
 
-module.exports = app
+module.exports = {
+  signup,
+  login
+}

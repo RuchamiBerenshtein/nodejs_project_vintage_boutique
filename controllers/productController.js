@@ -1,8 +1,6 @@
-const express = require('express')
-const app = express.Router()
 const ProductsFormDB = require('../models/product')
 
-app.get('/:categoryID', async (req, res) => {
+const getProductById = async (req, res) => {
   try {
     const id = req.params.categoryID
     const product = await ProductsFormDB.findById(id)
@@ -10,9 +8,9 @@ app.get('/:categoryID', async (req, res) => {
   } catch (err) {
     res.status(404).send('category not found')
   }
-})
+}
 
-app.get('/:categoryID/:productID', async (req, res) => {
+const getProductByIdAndCategoryId = async (req, res) => {
   try {
     const categoryId = req.params.categoryID
     const productId = req.params.productID
@@ -23,9 +21,9 @@ app.get('/:categoryID/:productID', async (req, res) => {
   } catch (err) {
     res.status(404).send('product not found')
   }
-})
+}
 
-app.post('/', async (req, res) => {
+const addProduct = async (req, res) => {
   try {
     const newProduct = new ProductsFormDB({ name: req.body.name, categoryId: req.body.categoryId })
     await newProduct.save()
@@ -34,9 +32,9 @@ app.post('/', async (req, res) => {
     console.error(err)
     res.status(500).send(err.message)
   }
-})
+}
 
-app.put('/:productId', async (req, res, err) => {
+const updateProduct = async (req, res, err) => {
   try {
     const id = req.params.productId
     await ProductsFormDB.findByIdAndUpdate(id, { name: req.body.name, categoryId: req.body.category })
@@ -44,9 +42,9 @@ app.put('/:productId', async (req, res, err) => {
   } catch (err) {
     res.status(404).send('product not found')
   }
-})
+}
 
-app.delete('/:productId', async (req, res) => {
+const deleteProduct = async (req, res) => {
   try {
     const id = req.params.productId
     await ProductsFormDB.findByIdAndDelete(id)
@@ -54,6 +52,12 @@ app.delete('/:productId', async (req, res) => {
   } catch (err) {
     res.status(404).send('product not found')
   }
-})
+}
 
-module.exports = app
+module.exports = {
+  getProductById,
+  getProductByIdAndCategoryId,
+  addProduct,
+  updateProduct,
+  deleteProduct
+}
