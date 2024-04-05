@@ -1,32 +1,33 @@
-const ProductsFormDB = require('../models/product')
+const productService = require('../services/productService')
 
 const getProductById = async (req, res) => {
   try {
-    const id = req.params.categoryID
-    const product = await ProductsFormDB.findById(id)
+    const categoryId = req.params.categoryId
+    console.log(categoryId);
+
+    const product = await productService.getProductByCategoryId(categoryId)
+
     res.send(product)
   } catch (err) {
-    res.status(404).send('category not found')
+    res.status(404).send('Product not found')
   }
 }
 
 const getProductByIdAndCategoryId = async (req, res) => {
   try {
-    const categoryId = req.params.categoryID
-    const productId = req.params.productID
-    const product = await ProductsFormDB.findById(productId)
-    if (product.categoryId === categoryId) { res.send(product) } else {
-      res.status(404).send('product exist in another category')
-    }
+    const productId = req.params.productId
+    const categoryId = req.params.categoryId
+    const product = await productService.getProductByIdAndCategoryId(productId, categoryId)
+    res.send(product)
   } catch (err) {
-    res.status(404).send('product not found')
+    res.status(404).send('Product not found or does not belong to the specified category')
   }
 }
 
 const addProduct = async (req, res) => {
   try {
-    const newProduct = new ProductsFormDB({ name: req.body.name, categoryId: req.body.categoryId })
-    await newProduct.save()
+    const { name, categoryId } = req.body
+    await productService.addProduct(name, categoryId)
     res.status(201).send('Product added successfully')
   } catch (err) {
     console.error(err)
@@ -34,23 +35,24 @@ const addProduct = async (req, res) => {
   }
 }
 
-const updateProduct = async (req, res, err) => {
+const updateProduct = async (req, res) => {
   try {
-    const id = req.params.productId
-    await ProductsFormDB.findByIdAndUpdate(id, { name: req.body.name, categoryId: req.body.category })
+    const productId = req.params.productId
+    const { name, categoryId } = req.body
+    await productService.updateProduct(productId, name, categoryId)
     res.send('Product updated successfully')
   } catch (err) {
-    res.status(404).send('product not found')
+    res.status(404).send('Product not found')
   }
 }
 
 const deleteProduct = async (req, res) => {
   try {
-    const id = req.params.productId
-    await ProductsFormDB.findByIdAndDelete(id)
+    const productId = req.params.productId
+    await productService.deleteProduct(productId)
     res.send('Product deleted successfully')
   } catch (err) {
-    res.status(404).send('product not found')
+    res.status(404).send('Product not found')
   }
 }
 

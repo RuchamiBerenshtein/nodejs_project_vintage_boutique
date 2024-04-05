@@ -1,12 +1,9 @@
-const CategoriesFromDB = require('../models/category')
+const categoryService = require('../services/categoryService')
 
 const getAllCategories = async (req, res) => {
   try {
-    const category = await CategoriesFromDB.find()
-    const sortedCategory = category.toSorted((a, b) => {
-      return a.name.localeCompare(b.name)
-    })
-    res.send(sortedCategory)
+    const category = await categoryService.getAllCategories()
+    res.send(category)
   } catch (err) {
     res.status(404).send('categories not found')
   }
@@ -15,7 +12,7 @@ const getAllCategories = async (req, res) => {
 const getCategoryById = async (req, res) => {
   try {
     const id = req.params.categoryID
-    const oneCategory = await CategoriesFromDB.findById(id)
+    const oneCategory = await categoryService.getCategoryById(id)
     if (!oneCategory) {
       res.status(404).send('Category not found or you didn\'t provide a category ID in the request')
       return
@@ -28,9 +25,9 @@ const getCategoryById = async (req, res) => {
 
 const addCategory = async (req, res) => {
   try {
-    const newCategory = new CategoriesFromDB({ name: req.body.name })
-    await newCategory.save()
-    res.send('the category added successfully')
+    const name = req.body.name
+    const addCategory = await categoryService.addCategory(name)
+    res.send('the category added successfully: ' + addCategory)
   } catch (err) {
     res.status(500).send(err.message)
   }
@@ -39,17 +36,17 @@ const addCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
   try {
     const id = req.params.categoryID
-    await CategoriesFromDB.findByIdAndUpdate(id, { name: req.body.name })
-    res.send('the category updated successfully')
+    const updatedCategory = await categoryService.updateCategory(id, req.body.name)
+    res.send('The category updated successfully: ' + updatedCategory)
   } catch (err) {
-    res.status(404).send('Cannot update not found category  ' + err.message)
+    res.status(404).send('Cannot update not found category: ' + err.message)
   }
 }
 
 const deleteCategory = async (req, res) => {
   try {
     const id = req.params.categoryID
-    await CategoriesFromDB.findByIdAndDelete(id)
+    await categoryService.deleteCategory(id)
     res.send('the category deleted successfully')
   } catch (err) {
     res.status(404).send('Cannot delete category ')

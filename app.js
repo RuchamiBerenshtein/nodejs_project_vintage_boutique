@@ -1,24 +1,15 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
-const mongoose = require('mongoose')
-
-mongoose.set('strictQuery', false)
-
-const mongoDB = 'mongodb://localhost:27017/my_database'
-
-main().catch((err) => console.log(err))
-
-async function main () {
-  await mongoose.connect(mongoDB)
-  console.log('mongoDB connected')
-}
+const connectToDatabase = require('./services/dbService')
 
 const categoryRoute = require('./routes/categoryRoute')
 const productRoute = require('./routes/productRoute')
 const userRoute = require('./routes/userRoute')
 const middleware = require('./middleware/logMiddleware')
 const { loggedIn } = require('./middleware/auth')
+
+connectToDatabase().catch((err) => console.log(err))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
