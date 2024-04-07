@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 mongoose.set('strictQuery', false)
 
-const mongoDB = 'mongodb://localhost:27017/my_database'
+const mongoDB = process.env.MONGODB_URI;
 
 const connectToDatabase = async () => {
   try {

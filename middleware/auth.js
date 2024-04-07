@@ -1,4 +1,4 @@
-const config = require('../config/config')
+require('dotenv').config()
 const jwt = require('jsonwebtoken')
 
 exports.loggedIn = function (req, res, next) {
@@ -10,8 +10,7 @@ exports.loggedIn = function (req, res, next) {
       // Remove Bearer from string
       token = token.slice(7, token.length).trimLeft()
     }
-    const verified = jwt.verify(token, config.TOKEN_SECRET)
-    console.log(verified)
+    const verified = jwt.verify(token, process.env.TOKEN_SECRET)
     req.user = verified
     next()
   } catch (err) {
@@ -20,7 +19,7 @@ exports.loggedIn = function (req, res, next) {
 }
 
 exports.adminOnly = async function (req, res, next) {
-  if (req.user.user_type_id === 2) {
+  if (req.user.user_type_id === parseInt(process.env.ADMIN_USER_TYPE_ID, 10)) { // Using environment variable for admin user type ID
     return res.status(401).send('Access Denied')
   }
   next()
